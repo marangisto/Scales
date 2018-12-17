@@ -57,6 +57,4 @@ scale pitch mode = map fromMIDI . generate (toMIDI pitch) $ fromEnum mode
 
 main :: IO ()
 main = do
-    print $ fromMIDI 60
-    print $ toMIDI $ pitch C 4
-    mapM_ (print . scale (pitch C 4)) [Ionian .. Locrian]
+    mapM_ (\m -> print (m,  scale (pitch C 4) m)) [Ionian .. Locrian]
