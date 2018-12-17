@@ -1,5 +1,7 @@
 module Main where
 
+type MIDI = Int
+
 data Note
     = C
     | C'
@@ -15,6 +17,13 @@ data Note
     | B
     deriving (Eq, Ord, Enum, Bounded, Show)
 
+type Octave = Int
+
+newtype Pitch = Pitch { unPitch :: (Note, Octave) }
+
+instance Show Pitch where
+    show (Pitch { unPitch = (n, o) }) = show n ++ show o
+
 data Mode
     = Ionian
     | Dorian
@@ -25,6 +34,15 @@ data Mode
     | Locrian
     deriving (Eq, Ord, Enum, Bounded, Show)
 
+pitch :: Note -> Octave -> Pitch
+pitch n o = Pitch (n, o)
+
+fromMIDI :: MIDI -> Pitch
+fromMIDI x = let (i, j) = (x - 12) `divMod` 12 in Pitch (toEnum j, i)
+
+toMIDI :: Pitch -> MIDI
+toMIDI p = let (n, o) = unPitch p in 12 + fromEnum n + o * 12
+
 intervals :: [Int]
 intervals = [ 2, 2, 1, 2, 2, 2, 1 ]
 
@@ -34,10 +52,11 @@ rotate (x:xs) = xs ++ [ x ]
 generate :: Int -> Int -> [Int]
 generate n m = scanl (+) n $ iterate rotate intervals!!m
 
-scale :: Note -> Mode -> [Note]
-scale note mode = map (toEnum . (`mod` 12)) . generate (fromEnum note) $ fromEnum mode
+scale :: Pitch -> Mode -> [Pitch]
+scale pitch mode = map fromMIDI . generate (toMIDI pitch) $ fromEnum mode
 
 main :: IO ()
 main = do
-    mapM_ (print . scale C) [Ionian .. Locrian]
-
+    print $ fromMIDI 60
+    print $ toMIDI $ pitch C 4
+    mapM_ (print . scale (pitch C 4)) [Ionian .. Locrian]
