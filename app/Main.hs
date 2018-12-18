@@ -64,8 +64,15 @@ freq d = 440*2**((fromIntegral d - 69)/12)
 f2s :: Double -> String
 f2s x = showFFloat (Just 2) x "Hz"
 
+cv :: MIDI -> Double
+cv d = fromIntegral (d - toMIDI (pitch A 4)) / 12
+
+v2s :: Double -> String
+v2s x = showFFloat (Just 4) x "V"
+
 main :: IO ()
 main = do
     mapM_ (\m -> print (m,  scale (pitch C 4) m)) [Ionian .. Locrian]
-    mapM_ (\d -> putStrLn $ show (fromMIDI d) ++ "\t" ++ f2s (freq d)) [ toMIDI (pitch A 3) .. toMIDI (pitch A 5) ]
+    mapM_ (\d -> putStrLn $ show (fromMIDI d) ++ "\t" ++ f2s (freq d) ++ "\t" ++ v2s (cv d))
+        [ toMIDI (pitch A 3) .. toMIDI (pitch A 5) ]
 
