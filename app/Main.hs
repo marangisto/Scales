@@ -2,20 +2,21 @@ module Main where
 
 type MIDI = Int
 
-data Note
-    = C
-    | C'
-    | D
-    | D'
-    | E
-    | F
-    | F'
-    | G
-    | G'
-    | A
-    | A'
-    | B
-    deriving (Eq, Ord, Enum, Bounded, Show)
+data Note = C | C' | D | D' | E | F | F' | G | G' | A | A' | B deriving (Eq, Ord, Enum, Bounded)
+
+instance Show Note where
+    show C  = "C"
+    show C' = "C#"
+    show D  = "D"
+    show D' = "D#"
+    show E  = "E"
+    show F  = "F"
+    show F' = "F#"
+    show G  = "G"
+    show G' = "G#"
+    show A  = "A"
+    show A' = "A#"
+    show B  = "B"
 
 type Octave = Int
 
