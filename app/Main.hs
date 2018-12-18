@@ -1,5 +1,7 @@
 module Main where
 
+import Numeric 
+
 type MIDI = Int
 
 data Note = C | C' | D | D' | E | F | F' | G | G' | A | A' | B deriving (Eq, Ord, Enum, Bounded)
@@ -39,7 +41,7 @@ pitch :: Note -> Octave -> Pitch
 pitch n o = Pitch (n, o)
 
 fromMIDI :: MIDI -> Pitch
-fromMIDI x = let (i, j) = (x - 12) `divMod` 12 in Pitch (toEnum j, i)
+fromMIDI d = let (i, j) = (d - 12) `divMod` 12 in Pitch (toEnum j, i)
 
 toMIDI :: Pitch -> MIDI
 toMIDI p = let (n, o) = unPitch p in 12 + fromEnum n + o * 12
@@ -56,6 +58,14 @@ generate n m = scanl (+) n $ iterate rotate intervals!!m
 scale :: Pitch -> Mode -> [Pitch]
 scale pitch mode = map fromMIDI . generate (toMIDI pitch) $ fromEnum mode
 
+freq :: MIDI -> Double
+freq d = 440*2**((fromIntegral d - 69)/12)
+
+f2s :: Double -> String
+f2s x = showFFloat (Just 2) x "Hz"
+
 main :: IO ()
 main = do
     mapM_ (\m -> print (m,  scale (pitch C 4) m)) [Ionian .. Locrian]
+    mapM_ (\d -> putStrLn $ show (fromMIDI d) ++ "\t" ++ f2s (freq d)) [ toMIDI (pitch A 3) .. toMIDI (pitch A 5) ]
+
